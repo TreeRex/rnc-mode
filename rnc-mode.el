@@ -1,7 +1,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;   A major mode for editing RELAX NG Compact syntax.
-;;   Version: 1.0b3
-;;   Date: 2002-12-05
+;;   Version: 1.0b4
+;;   Date: 2012-12-18
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -43,6 +43,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;   Created by David.Rosenborg@pantor.com
+;;   Modified by Tom Emerson, tremerson@gmail.com
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -54,6 +55,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;   Changes since 1.0b3:
+;;     Updated to work with GNU Emacs 23+.
 ;;   Changes since 1.0b:
 ;;     Added a couple of defvars for faces to handle differences
 ;;     between GNU Emacs and XEmacs.
@@ -79,8 +82,9 @@
 (defun rnc-make-regexp-choice (operands)
   "(op1 op2 ...) -> \"\\(op1\\|op2\\|...\\)\""
   (let ((result "\\("))
-    (mapcar (lambda (op) (setq result (concat result op "\\|"))) operands)
-    (concat (substring result 0 -2) "\\)")))
+    (dolist (op operands
+             (concat (substring result 0 -2) "\\)"))
+      (setq result (concat result op "\\|")))))
 
 ;; Font lock treats face names differently in GNU Emacs and XEmacs
 ;; The following defvars is a workaround
@@ -210,7 +214,7 @@
 	    (beginning-of-line)
 	    (let ((pos (re-search-forward "\\S " (point-max) t)))
 	      (and pos (= (- pos 1) p))))
-      (forward-char-command))))
+      (forward-char))))
 
 (defvar rnc-mode-map () "Keymap used in RNC mode.")
 (when (not rnc-mode-map)
