@@ -1,8 +1,13 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;   A major mode for editing RELAX NG Compact syntax.
-;;   Version: 1.0b4
-;;   Date: 2012-12-18
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; rnc-mode.el --- A major mode for editing RELAX NG Compact syntax.
+
+;; Copyright (c) 2002, Pantor Engineering AB
+
+;; Author: David Rosenborg <David.Rosenborg@pantor.com>
+;; Maintainer: Tom Emerson <tremerson@gmail.com>
+;; Version: 1.0b5
+;; Package-Version: 1.0.5
+
+;; This file is not part of GNU Emacs.
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -42,11 +47,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;   Created by David.Rosenborg@pantor.com
-;;   Modified by Tom Emerson, tremerson@gmail.com
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;   Example setup for your ~/.emacs file:
 ;;
 ;;   (autoload 'rnc-mode "rnc-mode")
@@ -55,12 +55,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;   Changes since 1.0b4:
+;;     Updated comments to follow Emacs Lisp header conventions
 ;;   Changes since 1.0b3:
 ;;     Updated to work with GNU Emacs 23+.
 ;;   Changes since 1.0b:
 ;;     Added a couple of defvars for faces to handle differences
 ;;     between GNU Emacs and XEmacs.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Code:
 
 (require 'font-lock)
 
@@ -264,3 +268,5 @@
   (run-hooks 'rnc-mode-hook))
 
 (provide 'rnc-mode)
+
+;;; rnc-mode.el ends here
