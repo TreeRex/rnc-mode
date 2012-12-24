@@ -4,8 +4,8 @@
 
 ;; Author: David Rosenborg <David.Rosenborg@pantor.com>
 ;; Maintainer: Tom Emerson <tremerson@gmail.com>
-;; Version: 1.0b5
-;; Package-Version: 1.0.5
+;; Version: 1.0b6
+;; Package-Version: 1.0.6
 
 ;; This file is not part of GNU Emacs.
 
@@ -67,6 +67,7 @@
 ;;; Code:
 
 (require 'font-lock)
+(require 'flymake)
 
 (defvar rnc-indent-level 3 "The RNC indentation level.")
   
@@ -82,6 +83,36 @@
   (mapcar (lambda (kw) (concat "\\b" kw "\\b"))
 	  '("empty" "notAllowed" "string" "text" "token"))
   "RNC atomic pattern keywords")
+
+(defvar rnc-mode-hook nil
+  "Hooks called when RNC mode starts up.")
+
+;;; Flymake Support
+
+(defvar rnc-jing-jar-file nil
+  "Pathname to the Jing JAR file.")
+
+(defvar rnc-enable-flymake nil
+  "If non-nil then schema are checked on the fly if Jing is installed")
+
+(defun rnc-flymake-init ()
+  "Flymake init function for running Jing on the schema."
+  (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                     'flymake-create-temp-inplace))
+         (local-file (file-relative-name
+                      temp-file
+                      (file-name-directory buffer-file-name))))
+    (list "java" (list "-jar" rnc-jing-jar-file "-c" temp-file))))
+
+(defun rnc-configure-flymake ()
+  (if (and (stringp rnc-jing-jar-file)
+           (file-exists-p rnc-jing-jar-file))
+      (add-to-list 'flymake-allowed-file-name-masks
+                   '(".+\\.rnc$"
+                     rnc-flymake-init
+                     flymake-simple-cleanup
+                     flymake-get-real-file-name))
+    (message "RNC flymake not enabled because the Jing jar could not be found")))
 
 (defun rnc-make-regexp-choice (operands)
   "(op1 op2 ...) -> \"\\(op1\\|op2\\|...\\)\""
@@ -110,7 +141,6 @@
    (cons (rnc-make-regexp-choice rnc-keywords) font-lock-keyword-face)
    )
   "RNC Highlighting")
-
 
 (defun rnc-find-column (first start)
   "Find which column to indent to." 
@@ -229,6 +259,7 @@
   (define-key rnc-mode-map "]" 'rnc-electric-brace)
   (define-key rnc-mode-map "[" 'rnc-electric-brace))
 
+;;;###autoload
 (defun rnc-mode ()
   "Major mode for editing RELAX NG Compact Syntax schemas.
 \\{rnc-mode-map}"
@@ -262,6 +293,10 @@
     (modify-syntax-entry ?- "w   " rnc-syntax-table)
     (modify-syntax-entry ?_ "w   " rnc-syntax-table)
     (set-syntax-table rnc-syntax-table))
+
+  (when rnc-enable-flymake
+    (rnc-configure-flymake)
+    (flymake-mode))
   
   (setq mode-name "RNC"
 	major-mode 'rnc-mode)
