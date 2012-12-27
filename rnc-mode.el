@@ -1,7 +1,8 @@
 ;;; rnc-mode.el --- A major mode for editing RELAX NG Compact syntax.
 
 ;; Copyright (c) 2002, Pantor Engineering AB
-
+;; Portions Copyright (c) 2012, Thomas R Emerson
+;;
 ;; Author: David Rosenborg <David.Rosenborg@pantor.com>
 ;; Maintainer: Tom Emerson <tremerson@gmail.com>
 ;; Version: 1.0b6
@@ -50,8 +51,7 @@
 ;;   Example setup for your ~/.emacs file:
 ;;
 ;;   (autoload 'rnc-mode "rnc-mode")
-;;   (setq auto-mode-alist       
-;;         (cons '("\\.rnc\\'" . rnc-mode) auto-mode-alist))
+;;   (add-to-list 'auto-mode-alist '("\\.rnc\\'" . rnc-mode))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -102,7 +102,7 @@
          (local-file (file-relative-name
                       temp-file
                       (file-name-directory buffer-file-name))))
-    (list "java" (list "-jar" rnc-jing-jar-file "-c" temp-file))))
+    (list "java" (list "-jar" rnc-jing-jar-file "-c" local-file))))
 
 (defun rnc-configure-flymake ()
   (if (and (stringp rnc-jing-jar-file)
@@ -294,8 +294,8 @@
     (modify-syntax-entry ?_ "w   " rnc-syntax-table)
     (set-syntax-table rnc-syntax-table))
 
+  (rnc-configure-flymake)
   (when rnc-enable-flymake
-    (rnc-configure-flymake)
     (flymake-mode))
   
   (setq mode-name "RNC"
