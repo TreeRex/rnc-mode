@@ -5,7 +5,6 @@
 ;;
 ;; Author: David Rosenborg <David.Rosenborg@pantor.com>
 ;; Maintainer: Tom Emerson <tremerson@gmail.com>
-;; Version: 1.0b6
 ;; Package-Version: 1.0.6
 
 ;; This file is not part of GNU Emacs.
@@ -52,9 +51,25 @@
 ;;
 ;;   (autoload 'rnc-mode "rnc-mode")
 ;;   (add-to-list 'auto-mode-alist '("\\.rnc\\'" . rnc-mode))
+;;
+;;   If you want on-the-fly syntax checking with flymake and
+;;   Jing, you need to specify the path to the Jing jar file and
+;;   enable syntax checking. For example,
+;;
+;;   (setq rnc-enable-flymake t
+;;         rnc-jing-jar-file (expand-file-name "~/src/jing-20091111/bin/jing.jar"))
+;;
+;;   The 'java' executable must be in exec-path.
+;;
+;;   You can get a menu listing the namespaces, patterns, data-
+;;   types and includes by adding
+;;
+;;   (setq rnc-enable-imenu t)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;   Changes since 1.0.5:
+;;     Added support for flymake and imenu.
 ;;   Changes since 1.0b4:
 ;;     Updated comments to follow Emacs Lisp header conventions
 ;;   Changes since 1.0b3:
@@ -68,6 +83,7 @@
 
 (require 'font-lock)
 (require 'flymake)
+(require 'imenu)
 
 (defvar rnc-indent-level 3 "The RNC indentation level.")
   
@@ -113,6 +129,25 @@
                      flymake-simple-cleanup
                      flymake-get-real-file-name))
     (message "RNC flymake not enabled because the Jing jar could not be found")))
+
+;;; Imenu support
+
+(defvar rnc-enable-imenu nil
+  "If non-nil then imenu support is enabled.")
+
+(defvar rnc-imenu-generic-expression
+  ;; these regexps are from Tony Graham's blog post:
+  ;;   http://inasmuch.as/2012/01/13/imenu-generic-expression/
+  '((nil         "^\\([a-zA-Z][-a-zA-Z0-9._]*\\)\\s-*[&|]?=" 1)
+    ("include"   "^include\\s-+['\"]\\([a-zA-Z][-a-zA-Z0-9._]*\\)['\"]" 1)
+    ("namespace" "^\\(default\\s-+\\)?namespace\\s-+\\([a-zA-Z][-a-zA-Z0-9._]*\\)\\s-*=" 2)
+    ("datatypes" "^datatypes\\s-+\\([a-zA-Z][-a-zA-Z0-9._]*\\)\\s-*=" 1))
+  "Patterns for recognizing interesting parts of an RNC file.")
+
+(defun rnc-configure-imenu ()
+  (setq imenu-generic-expression rnc-imenu-generic-expression)
+  (setq imenu-sort-function 'imenu--sort-by-name)
+  (imenu-add-to-menubar "RNC"))
 
 (defun rnc-make-regexp-choice (operands)
   "(op1 op2 ...) -> \"\\(op1\\|op2\\|...\\)\""
@@ -297,6 +332,8 @@
   (rnc-configure-flymake)
   (when rnc-enable-flymake
     (flymake-mode))
+  (when rnc-enable-imenu
+    (rnc-configure-imenu))
   
   (setq mode-name "RNC"
 	major-mode 'rnc-mode)

@@ -30,15 +30,39 @@ archive. Put the following in your initialization file:
 ## On-the-fly Syntax Checking with Flymake and Jing
 
 You can perform on-the-fly syntax checking of your schema using
-[Jing](http://www.thaiopensource.com/relaxng/jing.html) and Flymake.
+[Jing](http://www.thaiopensource.com/relaxng/jing.html) and Flymake. Two
+variables control this setting:
 
-Set the variable `rnc-jing-jar-file` to the absolute path of `jing.jar`.
+- Variable: **rnc-jing-jar-file**
 
-Set the variable `rnc-enable-flymake` to `t` to turn on syntax checking when
-the file is loaded. If you set this to `nil` you can turn syntax checking on
-later with `M-x flymake-mode`.
+    The value of this variable is a string, the pathname of the JING jar file.
+  
+- Variable: **rnc-enable-flymake**
+
+    When this variable is `t` flymake is enabled when an RNC file is
+    loaded. If it is `nil` then you can control when syntax checking is
+    enabled with `M-x flymake-mode`.
+
+For example:
+
+    (setq rnc-enable-flymake t
+          rnc-jing-jar-file (expand-file-name "~/src/jing-20091111/bin/jing.jar")
 
 Currently this only works with single-file schema.
+
+## Imenu Support
+
+You can use Imenu to get an alphabetically sorted list of patterns,
+namespaces, datatypes, and includes in the file.
+
+- Variable: **rnc-enable-imenu**
+
+    When this variable is `t` an **RNC** menu added to the menu bar containing
+    the patterns, namespaces, datatypes, and includes in the current file.
+
+For example,
+
+    (setq rnc-enable-imenu t)
 
 ## License
 
